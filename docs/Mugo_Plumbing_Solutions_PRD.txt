@@ -1,0 +1,107 @@
+
+Product Requirements Document (PRD)
+Product Name: Mugo Plumbing Solutions (Mobile App)
+Author: Vincent Mugondora
+Date: August 1, 2025
+Version: 1.0
+
+1. Purpose
+Mugo Plumbing Solutions is a mobile application that connects homeowners and property managers with verified plumbers. The platform streamlines service booking, communication, and payment in one unified experience for clients, plumbers, and admins.
+
+2. Goals & Objectives
+- Help clients book trusted plumbers quickly
+- Empower plumbers to manage jobs and earnings
+- Enable admin to verify plumbers and track service activity
+- Provide real-time communication and updates
+- Support mobile-first access for urban and peri-urban users in Zimbabwe
+
+3. User Personas
+- Client: Homeowner needing plumbing services
+- Plumber: Verified service provider
+- Admin: Manages plumbers, service categories, reports
+
+4. Features & Requirements
+Client Features:
+- Sign up / Login (email, Google, Facebook)
+- View service categories
+- Request a plumber
+- Track plumber arrival & job status
+- Pay (Cash / Paynow / EcoCash / Stripe)
+- Rate and review completed jobs
+- Receive push & WhatsApp notifications
+
+Plumber Features:
+- Sign up / Login
+- Submit ID, certificate, and license (image upload)
+- Accept/decline job requests
+- Update job status (pending → in progress → complete)
+- Upload job completion images
+- View earnings dashboard
+
+Admin Features:
+- Approve/reject plumber applications
+- Manage service categories
+- View job history
+- Monitor reviews and earnings
+- Assign plumbers (optional)
+
+5. Tech Stack
+Frontend: React Native (Expo)
+Authentication: Firebase Auth (email, Google, Facebook)
+Backend API: FastAPI or Node.js + Express
+Database: MongoDB Atlas
+File Storage: Cloudinary or Firebase Storage
+Payments: Paynow, Flutterwave, Stripe
+Notifications: Expo Push Notifications, FCM, Twilio
+Hosting: Render / Railway / Google Cloud
+
+6. Key Metrics
+- Time from app open → service booked
+- Job completion rate
+- Response time from plumbers
+- Average client ratings
+- Monthly transactions and earnings
+
+7. App Screens (MVP)
+- Splash / Onboarding
+- Login / Register
+- Home (Book Service)
+- Booking Confirmation
+- Active Job Tracker
+- Job List / Accept Job
+- Job Completion Upload
+- Earnings Dashboard
+- Admin Panel (Web)
+
+8. User Roles & Access Control
+Client: View, book, track, pay, rate
+Plumber: Accept, update, complete jobs, view earnings
+Admin: Manage users, jobs, services, system settings
+
+9. Testing Requirements
+- Unit tests (client/plumber flows)
+- Integration tests (booking, login)
+- Firebase Auth & storage validation
+- Real device testing for Android & iOS
+- Payment gateway sandbox testing
+
+10. Development Milestones
+Phase 1: Week 1–2 - UI/UX Screens, Navigation
+Phase 2: Week 3–4 - Firebase Auth, Sign up/Login
+Phase 3: Week 5–6 - Booking flow + plumber features
+Phase 4: Week 7–8 - File upload + real-time updates
+Phase 5: Week 9 - Admin dashboard (optional web)
+Phase 6: Week 10 - Push notifications, payments
+
+11. Future Features (Post-MVP)
+- In-app chat (Socket.IO or Firestore)
+- Loyalty & referral program
+- Offline plumber rating
+- Automated service matching
+- AI job estimation from uploaded images
+
+12. Appendix
+- Firebase Project: mugo-app
+- OAuth Redirect URI for Expo: https://auth.expo.io/@your-username/mugo-app
+- GitHub Repo: TBD
+- Figma/Visily Design Link: TBD
