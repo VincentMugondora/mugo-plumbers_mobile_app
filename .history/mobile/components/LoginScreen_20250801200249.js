@@ -9,13 +9,11 @@ import * as AuthSession from 'expo-auth-session';
 import Constants from 'expo-constants';
 import { GoogleAuthProvider, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
 import * as WebBrowser from 'expo-web-browser';
-import { auth } from '../firebase';
 
 export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, onResetPassword }) {
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleLogin = () => {
     setLoading(true);

@@ -15,7 +15,6 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleLogin = () => {
     setLoading(true);

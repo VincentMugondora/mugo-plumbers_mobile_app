@@ -7,7 +7,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/
 
 import * as AuthSession from 'expo-auth-session';
 import Constants from 'expo-constants';
-import { GoogleAuthProvider, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import * as WebBrowser from 'expo-web-browser';
 
 import { db } from '../firebase';
@@ -61,28 +61,19 @@ export default function SignupScreen({ role, onSignUp, onGoogle, onFacebook, onL
     try {
       const clientId = Constants?.expoConfig?.extra?.GOOGLE_CLIENT_ID || Constants?.manifest?.extra?.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID;
       const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
-      
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-        `client_id=${clientId}` +
-        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-        `&response_type=token` +
-        `&scope=profile%20email`;
-      
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
-      
-      if (result.type === 'success' && result.url) {
-        const url = new URL(result.url);
-        const accessToken = url.hash.substring(1).split('&').find(param => param.startsWith('access_token='))?.split('=')[1];
-        
-        if (accessToken) {
-          const credential = GoogleAuthProvider.credential(null, accessToken);
-          await signInWithCredential(auth, credential);
-          setLoading(false);
-          if (onGoogle) onGoogle();
-        } else {
-          setLoading(false);
-          setError('Failed to get access token.');
-        }
+      const result = await AuthSession.startAsync({
+        authUrl:
+          `https://accounts.google.com/o/oauth2/v2/auth?` +
+          `client_id=${clientId}` +
+          `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+          `&response_type=token` +
+          `&scope=profile%20email`,
+      });
+      if (result.type === 'success' && result.params.access_token) {
+        const credential = GoogleAuthProvider.credential(null, result.params.access_token);
+        await signInWithCredential(auth, credential);
+        setLoading(false);
+        if (onGoogle) onGoogle();
       } else {
         setLoading(false);
         setError('Google sign in cancelled.');
@@ -101,28 +92,19 @@ export default function SignupScreen({ role, onSignUp, onGoogle, onFacebook, onL
     try {
       const appId = Constants?.expoConfig?.extra?.FACEBOOK_APP_ID || Constants?.manifest?.extra?.FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID;
       const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
-      
-      const authUrl = `https://www.facebook.com/v10.0/dialog/oauth?` +
-        `client_id=${appId}` +
-        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-        `&response_type=token` +
-        `&scope=email,public_profile`;
-      
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
-      
-      if (result.type === 'success' && result.url) {
-        const url = new URL(result.url);
-        const accessToken = url.hash.substring(1).split('&').find(param => param.startsWith('access_token='))?.split('=')[1];
-        
-        if (accessToken) {
-          const credential = FacebookAuthProvider.credential(accessToken);
-          await signInWithCredential(auth, credential);
-          setLoading(false);
-          if (onFacebook) onFacebook();
-        } else {
-          setLoading(false);
-          setError('Failed to get access token.');
-        }
+      const result = await AuthSession.startAsync({
+        authUrl:
+          `https://www.facebook.com/v10.0/dialog/oauth?` +
+          `client_id=${appId}` +
+          `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+          `&response_type=token` +
+          `&scope=email,public_profile`,
+      });
+      if (result.type === 'success' && result.params.access_token) {
+        const credential = FacebookAuthProvider.credential(result.params.access_token);
+        await signInWithCredential(auth, credential);
+        setLoading(false);
+        if (onFacebook) onFacebook();
       } else {
         setLoading(false);
         setError('Facebook sign in cancelled.');

@@ -7,7 +7,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/
 
 import * as AuthSession from 'expo-auth-session';
 import Constants from 'expo-constants';
-import { GoogleAuthProvider, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import * as WebBrowser from 'expo-web-browser';
 
 import { db } from '../firebase';

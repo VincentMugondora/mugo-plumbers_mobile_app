@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function SignupRoute() {
   const router = useRouter();
-  const { role } = useLocalSearchParams();
+  const { role } = useSearchParams();
   return (
     <SignupScreen
       role={role}
