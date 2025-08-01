@@ -163,9 +163,8 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
           onChangeText={setPassword}
           secureTextEntry
         />
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
-          <Text style={styles.loginButtonText}>{loading ? 'Logging in...' : 'Login'}</Text>
+          <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.signUpButton} onPress={onSignUp}>
           <Text style={styles.signUpButtonText}>Sign Up</Text>
@@ -183,7 +182,7 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
           <FontAwesome name="facebook" size={22} color="#1877F3" style={styles.socialIcon} />
           <Text style={styles.socialButtonText}>Continue with Facebook</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => onResetPassword(emailOrPhone)} style={styles.resetLink}>
+        <TouchableOpacity onPress={onResetPassword} style={styles.resetLink}>
           <Text style={styles.resetText}>Forgot your password? <Text style={styles.resetNow}>Reset Now</Text></Text>
         </TouchableOpacity>
       </View>
@@ -308,11 +307,5 @@ const styles = StyleSheet.create({
   resetNow: {
     color: '#0099e5',
     fontWeight: 'bold',
-  },
-  errorText: {
-    color: '#ff0000',
-    fontSize: 14,
-    marginBottom: 8,
-    textAlign: 'center',
   },
 });

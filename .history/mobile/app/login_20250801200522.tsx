@@ -3,20 +3,11 @@ import LoginScreen from '../components/LoginScreen';
 import { useRouter } from 'expo-router';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginRoute() {
   const router = useRouter();
-  const { user } = useAuth();
   
-  // If user is already logged in, redirect to main app
-  React.useEffect(() => {
-    if (user) {
-      router.replace('/(tabs)');
-    }
-  }, [user, router]);
-  
-  const handleResetPassword = async (email: string) => {
+  const handleResetPassword = async (email) => {
     try {
       await sendPasswordResetEmail(auth, email);
       alert('Password reset email sent! Check your inbox.');
@@ -25,16 +16,12 @@ export default function LoginRoute() {
     }
   };
   
-  const handleSuccessfulLogin = () => {
-    router.replace('/(tabs)');
-  };
-  
   return (
     <LoginScreen
-      onLogin={handleSuccessfulLogin}
+      onLogin={() => router.replace('/')}
       onSignUp={() => router.replace('/signup')}
-      onGoogle={handleSuccessfulLogin}
-      onFacebook={handleSuccessfulLogin}
+      onGoogle={() => router.replace('/')}
+      onFacebook={() => router.replace('/')}
       onResetPassword={handleResetPassword}
     />
   );

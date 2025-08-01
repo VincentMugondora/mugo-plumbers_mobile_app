@@ -183,7 +183,7 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
           <FontAwesome name="facebook" size={22} color="#1877F3" style={styles.socialIcon} />
           <Text style={styles.socialButtonText}>Continue with Facebook</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => onResetPassword(emailOrPhone)} style={styles.resetLink}>
+        <TouchableOpacity onPress={onResetPassword} style={styles.resetLink}>
           <Text style={styles.resetText}>Forgot your password? <Text style={styles.resetNow}>Reset Now</Text></Text>
         </TouchableOpacity>
       </View>
