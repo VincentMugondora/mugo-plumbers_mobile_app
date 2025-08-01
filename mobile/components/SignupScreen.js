@@ -5,6 +5,10 @@ import { FontAwesome } from '@expo/vector-icons';
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 
+import * as AuthSession from 'expo-auth-session';
+import Constants from 'expo-constants';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+
 export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -31,10 +35,70 @@ export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       await sendEmailVerification(userCred.user);
       setLoading(false);
-      if (onSignUp) onSignUp({ email });
+      if (onSignUp) onSignUp();
     } catch (e) {
       setLoading(false);
       setError(e.message || 'Sign up failed.');
+    }
+  };
+
+  // Google sign up handler
+  const handleGoogleSignUp = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const clientId = Constants?.expoConfig?.extra?.GOOGLE_CLIENT_ID || Constants?.manifest?.extra?.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID;
+      const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+      const result = await AuthSession.startAsync({
+        authUrl:
+          `https://accounts.google.com/o/oauth2/v2/auth?` +
+          `client_id=${clientId}` +
+          `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+          `&response_type=token` +
+          `&scope=profile%20email`,
+      });
+      if (result.type === 'success' && result.params.access_token) {
+        const credential = GoogleAuthProvider.credential(null, result.params.access_token);
+        await signInWithCredential(auth, credential);
+        setLoading(false);
+        if (onGoogle) onGoogle();
+      } else {
+        setLoading(false);
+        setError('Google sign in cancelled.');
+      }
+    } catch (e) {
+      setLoading(false);
+      setError('Google sign in failed.');
+    }
+  };
+
+  // Facebook sign up handler
+  const handleFacebookSignUp = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const appId = Constants?.expoConfig?.extra?.FACEBOOK_APP_ID || Constants?.manifest?.extra?.FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID;
+      const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+      const result = await AuthSession.startAsync({
+        authUrl:
+          `https://www.facebook.com/v10.0/dialog/oauth?` +
+          `client_id=${appId}` +
+          `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+          `&response_type=token` +
+          `&scope=email,public_profile`,
+      });
+      if (result.type === 'success' && result.params.access_token) {
+        const credential = FacebookAuthProvider.credential(result.params.access_token);
+        await signInWithCredential(auth, credential);
+        setLoading(false);
+        if (onFacebook) onFacebook();
+      } else {
+        setLoading(false);
+        setError('Facebook sign in cancelled.');
+      }
+    } catch (e) {
+      setLoading(false);
+      setError('Facebook sign in failed.');
     }
   };
 
@@ -42,11 +106,11 @@ export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }
     <View style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.title}>Create Your Account</Text>
-        <TouchableOpacity style={styles.socialButton} onPress={onGoogle}>
+        <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignUp}>
           <FontAwesome name="google" size={22} color="#EA4335" style={styles.socialIcon} />
           <Text style={styles.socialButtonText}>Continue with Google</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.socialButton} onPress={onFacebook}>
+        <TouchableOpacity style={styles.socialButton} onPress={handleFacebookSignUp}>
           <FontAwesome name="facebook" size={22} color="#1877F3" style={styles.socialIcon} />
           <Text style={styles.socialButtonText}>Continue with Facebook</Text>
         </TouchableOpacity>

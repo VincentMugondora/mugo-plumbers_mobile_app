@@ -5,6 +5,10 @@ import { FontAwesome } from '@expo/vector-icons';
 const LOGO_ICON = require('../assets/images/logo1.png');
 const LOGO_LOADING = require('../assets/images/favicon.png');
 
+import * as AuthSession from 'expo-auth-session';
+import Constants from 'expo-constants';
+import { GoogleAuthProvider, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
+
 export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, onResetPassword }) {
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -17,6 +21,66 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
       setLoading(false);
       if (onLogin) onLogin(emailOrPhone, password);
     }, 1000);
+  };
+
+  // Google login handler
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const clientId = Constants?.expoConfig?.extra?.GOOGLE_CLIENT_ID || Constants?.manifest?.extra?.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID;
+      const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+      const result = await AuthSession.startAsync({
+        authUrl:
+          `https://accounts.google.com/o/oauth2/v2/auth?` +
+          `client_id=${clientId}` +
+          `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+          `&response_type=token` +
+          `&scope=profile%20email`,
+      });
+      if (result.type === 'success' && result.params.access_token) {
+        const credential = GoogleAuthProvider.credential(null, result.params.access_token);
+        await signInWithCredential(auth, credential);
+        setLoading(false);
+        if (onGoogle) onGoogle();
+      } else {
+        setLoading(false);
+        setError('Google login cancelled.');
+      }
+    } catch (e) {
+      setLoading(false);
+      setError('Google login failed.');
+    }
+  };
+
+  // Facebook login handler
+  const handleFacebookLogin = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const appId = Constants?.expoConfig?.extra?.FACEBOOK_APP_ID || Constants?.manifest?.extra?.FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID;
+      const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+      const result = await AuthSession.startAsync({
+        authUrl:
+          `https://www.facebook.com/v10.0/dialog/oauth?` +
+          `client_id=${appId}` +
+          `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+          `&response_type=token` +
+          `&scope=email,public_profile`,
+      });
+      if (result.type === 'success' && result.params.access_token) {
+        const credential = FacebookAuthProvider.credential(result.params.access_token);
+        await signInWithCredential(auth, credential);
+        setLoading(false);
+        if (onFacebook) onFacebook();
+      } else {
+        setLoading(false);
+        setError('Facebook login cancelled.');
+      }
+    } catch (e) {
+      setLoading(false);
+      setError('Facebook login failed.');
+    }
   };
 
   return (
@@ -55,11 +119,11 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
           <Text style={styles.orText}>or</Text>
           <View style={styles.divider} />
         </View>
-        <TouchableOpacity style={styles.socialButton} onPress={onGoogle}>
+        <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin}>
           <FontAwesome name="google" size={22} color="#EA4335" style={styles.socialIcon} />
           <Text style={styles.socialButtonText}>Continue with Google</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.socialButton} onPress={onFacebook}>
+        <TouchableOpacity style={styles.socialButton} onPress={handleFacebookLogin}>
           <FontAwesome name="facebook" size={22} color="#1877F3" style={styles.socialIcon} />
           <Text style={styles.socialButtonText}>Continue with Facebook</Text>
         </TouchableOpacity>
