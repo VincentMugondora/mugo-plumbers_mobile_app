@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 const LOGO_ICON = require('../assets/images/logo1.png');
 const LOGO_LOADING = require('../assets/images/favicon.png');
@@ -55,11 +56,11 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
           <View style={styles.divider} />
         </View>
         <TouchableOpacity style={styles.socialButton} onPress={onGoogle}>
-          <Image source={require('../assets/images/favicon.png')} style={styles.socialIcon} />
+          <FontAwesome name="google" size={22} color="#EA4335" style={styles.socialIcon} />
           <Text style={styles.socialButtonText}>Continue with Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.socialButton} onPress={onFacebook}>
-          <Image source={require('../assets/images/favicon.png')} style={styles.socialIcon} />
+          <FontAwesome name="facebook" size={22} color="#1877F3" style={styles.socialIcon} />
           <Text style={styles.socialButtonText}>Continue with Facebook</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onResetPassword} style={styles.resetLink}>

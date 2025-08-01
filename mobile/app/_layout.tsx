@@ -6,15 +6,32 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+import React, { useState } from 'react';
+import LoginScreen from '../components/LoginScreen';
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+  // Demo: Local state for authentication
+  const [authenticated, setAuthenticated] = useState(false);
 
   if (!loaded) {
     // Async font loading only occurs in development.
     return null;
+  }
+
+  if (!authenticated) {
+    return (
+      <LoginScreen
+        onLogin={() => setAuthenticated(true)}
+        onSignUp={() => {}}
+        onGoogle={() => setAuthenticated(true)}
+        onFacebook={() => setAuthenticated(true)}
+        onResetPassword={() => {}}
+      />
+    );
   }
 
   return (
