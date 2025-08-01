@@ -6,7 +6,7 @@ export default function SignupRoute() {
   const router = useRouter();
   return (
     <SignupScreen
-      onSignUp={() => router.replace('/')}
+      onSignUp={({ email }) => router.replace({ pathname: '/verify-email', params: { email } })}
       onGoogle={() => router.replace('/')}
       onFacebook={() => router.replace('/')}
       onLogin={() => router.replace('/login')}
