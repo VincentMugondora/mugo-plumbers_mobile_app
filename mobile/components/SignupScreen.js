@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+
 export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -10,6 +13,30 @@ export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSignUp = async () => {
+    setError(null);
+    if (!email || !password || !fullName) {
+      setError('Please fill all required fields.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCred.user);
+      setLoading(false);
+      if (onSignUp) onSignUp({ email });
+    } catch (e) {
+      setLoading(false);
+      setError(e.message || 'Sign up failed.');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -74,8 +101,9 @@ export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }
             <FontAwesome name={showConfirmPassword ? 'eye' : 'eye-slash'} size={20} color="#888" style={styles.eyeIcon} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.signUpButton} onPress={() => onSignUp && onSignUp({ fullName, email, phone, password, confirmPassword })}>
-          <Text style={styles.signUpButtonText}>Sign Up</Text>
+        {error ? <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text> : null}
+        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp} disabled={loading}>
+          <Text style={styles.signUpButtonText}>{loading ? 'Signing Up...' : 'Sign Up'}</Text>
         </TouchableOpacity>
         <View style={styles.loginRow}>
           <Text style={styles.loginText}>Already have an account? </Text>

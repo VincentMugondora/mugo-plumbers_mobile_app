@@ -2,8 +2,32 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
+import { auth } from '../firebase';
+import { checkActionCode, applyActionCode } from 'firebase/auth';
+import { useRouter } from 'expo-router';
+
 export default function VerifyEmailScreen({ email = "example@mugo.com", onVerify, onResend }) {
   const [code, setCode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const router = useRouter();
+
+  const handleVerify = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      // Firebase email verification uses oobCode in URL, not a user-entered code.
+      // Here, we simulate code entry for demo. In production, you would deep link from email.
+      await checkActionCode(auth, code);
+      await applyActionCode(auth, code);
+      setLoading(false);
+      if (onVerify) onVerify(code);
+      router.replace('/login');
+    } catch (e) {
+      setLoading(false);
+      setError('Invalid or expired verification code.');
+    }
+  };
 
   return (
     <View style={styles.container}>
