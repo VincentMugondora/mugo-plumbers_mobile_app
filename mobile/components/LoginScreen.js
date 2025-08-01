@@ -48,6 +48,7 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
         setError('Google login cancelled.');
       }
     } catch (e) {
+      console.log('Google login error:', e);
       setLoading(false);
       setError('Google login failed.');
     }
@@ -78,6 +79,7 @@ export default function LoginScreen({ onLogin, onSignUp, onGoogle, onFacebook, o
         setError('Facebook login cancelled.');
       }
     } catch (e) {
+      console.log('Facebook login error:', e);
       setLoading(false);
       setError('Facebook login failed.');
     }

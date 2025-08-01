@@ -9,7 +9,10 @@ import * as AuthSession from 'expo-auth-session';
 import Constants from 'expo-constants';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
-export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }) {
+import { db } from '../firebase';
+import { setDoc, doc } from 'firebase/firestore';
+
+export default function SignupScreen({ role, onSignUp, onGoogle, onFacebook, onLogin }) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -33,6 +36,14 @@ export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }
     setLoading(true);
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      // Save user role to Firestore
+      await setDoc(doc(db, 'users', userCred.user.uid), {
+        fullName,
+        email,
+        phone,
+        role: role || 'customer',
+        createdAt: new Date()
+      });
       await sendEmailVerification(userCred.user);
       setLoading(false);
       if (onSignUp) onSignUp();
@@ -67,6 +78,7 @@ export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }
         setError('Google sign in cancelled.');
       }
     } catch (e) {
+      console.log('Google sign in error:', e);
       setLoading(false);
       setError('Google sign in failed.');
     }
@@ -97,6 +109,7 @@ export default function SignupScreen({ onSignUp, onGoogle, onFacebook, onLogin }
         setError('Facebook sign in cancelled.');
       }
     } catch (e) {
+      console.log('Facebook sign in error:', e);
       setLoading(false);
       setError('Facebook sign in failed.');
     }
